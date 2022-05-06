@@ -59,6 +59,7 @@
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="/static/js/reconnecting-websocket.min.js"></script>
     <script>
         let socket = null;
         let o = document.getElementById("output");
@@ -73,7 +74,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            socket = new WebSocket("ws://127.0.0.1:8080/ws");
+            socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws", null, {debug: true, reconnectInterval: 3000});
 
             const offline = `<span class="badge bg-danger">Not Connected</span>`;
             const online = `<span class="badge bg-success">Connected</span>`;
@@ -84,7 +85,7 @@
                 statusDiv.innerHTML = online;
             }
 
-            socket.close = () => {
+            socket.onclose = () => {
                 console.log("connection closed");
                 statusDiv.innerHTML = offline;
             }
@@ -118,49 +119,48 @@
                 }
             }
 
-            let userInput = document.getElementById("username");
-                userInput.addEventListener("change", function() {
+            usernameField.addEventListener("change", function() {
                 let jsonData = {};
                 jsonData["action"] = "username";
                 jsonData["username"] = this.value;
                 socket.send(JSON.stringify(jsonData));
             });
 
-            document.getElementById("message").addEventListener("keydown", function(event) {
-                if (event.code === "enter") {
+            messageField.addEventListener("keydown", function(event) {
+                if (event.code === "Enter") {
                     if (!socket) {
                         console.log("no connection");
                         return false;
                     }
 
-                    if (usernameField === "" || messageField === "") {
+                    if (usernameField.value === "" || messageField.value === "") {
                         alert("fill out user and message");
                         return false;
                     } else {
-                        event.defaultPrevented();
+                        event.preventDefault();
                         event.stopPropagation();
                         sendMessage();
                     }
                 }
             });
 
-            document.getElementById("sendBtn").addEventListener("click", function(event) {
-                if (usernameField === "" || messageField === "") {
+            document.getElementById("sendBtn").addEventListener("click", function() {
+                if (usernameField.value === "" || messageField.value === "") {
                     alert("fill out user and message");
                     return false;
                 } else {
                     sendMessage();
                 }
-            })
+            });
         });
 
         function sendMessage() {
             let jsonData = {};
             jsonData["action"] = "broadcase";
-            jsonData["username"] = document.getElementById("username").value;
-            jsonData["message"] = document.getElementById("message").value;
+            jsonData["username"] = usernameField.value;
+            jsonData["message"] = messageField.value;
             socket.send(JSON.stringify(jsonData));
-            document.getElementById("message").value = "";
+            messageField.value = "";
         }
 
     </script>

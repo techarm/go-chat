@@ -114,7 +114,7 @@ func ListenToWsChannel() {
 
 		case "broadcase":
 			response.Action = "broadcase"
-			response.Message = fmt.Sprintf("<strong>%s</strog>: %s", e.UserName, e.Message)
+			response.Message = fmt.Sprintf("<strong>%s</strong>: %s", e.UserName, e.Message)
 			broadcastToAll(response)
 		}
 	}
