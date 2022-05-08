@@ -40,7 +40,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	log.Printf("User [%s] was loggi.\n", username)
+	log.Printf("User [%s] was login.\n", username)
 
 	vars := make(jet.VarMap)
 	vars.Set("username", username)
