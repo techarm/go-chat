@@ -10,6 +10,7 @@ import (
 func routes() http.Handler {
 	mux := pat.New()
 	mux.Get("/", http.HandlerFunc(handlers.Home))
+	mux.Get("/chat/:name", http.HandlerFunc(handlers.Chat))
 	mux.Get("/ws", http.HandlerFunc(handlers.WSEndPoint))
 
 	fileServer := http.FileServer(http.Dir("./static/"))
